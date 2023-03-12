@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World Monaco Editor</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+</head>
+<body>
+<h2>Hello World Monaco Editor</h2>
+<div>
+    <button onclick="setNewValue()">设置新的值</button>
+    <button onclick="setNewLanguage1()">设置新的python语言</button>
+    <button onclick="setNewLanguage2()">设置新的java语言</button>
+    <button onclick="getEditorValue()">获取当前正在编辑的值</button>
+</div>
+<div id="container" style="width: 800px;height:600px;border:1px solid gray">
+</div>
+
+<script src="../monaco-editor/package/min/vs/loader.js"></script>
+<script>
+    require.config({paths: {vs: '../monaco-editor/package/min/vs'}})
+    let editor;
+    require(['vs/editor/editor.main'], function () {
+        editor = monaco.editor.create(document.getElementById('container'), {
+            value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
+            language: 'javascript'
+        })
+    })
+
+    //设置编辑器内容
+    function setNewValue() {
+        let currentModel = editor.getModel();
+        currentModel.setValue(`//重新设置值\nconst blog = 'http://fizzz.blog.csdn.net'`)
+    }
+
+    //设置新的语言
+    function setNewLanguage1() {
+        let currentModel = editor.getModel();
+        const model = monaco.editor.createModel(`
+//重新设置值
+x = y = z =1
+print(x) #1
+`, 'python')
+        editor.setModel(model);
+        model.onDidChangeContent(e => {
+            console.log('--->', e)
+        })
+        if (currentModel) {
+            currentModel.dispose();
+        }
+    }
+
+    //设置新的语言 测试发现使用不了，可能是使用的方法不对
+    function setNewLanguage2() {
+        let currentModel = editor.getModel();
+
+        currentModel.setValue(`
+//重新设置值
+public class Person{
+    string a = 'Jack';
+    string b = 'John';
+    public static void main(){
+        system.out.println(a+b)
+    }
+}`)
+        editor.setModelLanguage(currentModel, 'java');
+
+    }
+
+    //获取编辑器里面的值
+    function getEditorValue() {
+        let currentModel = editor.getModel();
+        console.log('正在编辑的值：', currentModel.getValue())
+    }
+
+
+</script>
+</body>
+</html>
