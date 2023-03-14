@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello World Monaco Editor</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+</head>
+
+<body>
+<h2>Hello World Monaco Editor</h2>
+<p>只在第11行的global上增加了Marker</p>
+<button onclick="setMarker()">设置Marker</button>
+<button onclick="getMarker()">获取Marker</button>
+
+<div id="container" style="width: 800px; height: 600px; border: 1px solid grey"></div>
+
+<p>
+    <span id="position"></span>
+</p>
+<script src="../monaco-editor/package/min/vs/loader.js"></script>
+<script src="../const.js"></script>
+<script>
+    require.config({ paths: { vs: '../monaco-editor/package/min/vs' } });
+    let editor
+
+    require(['vs/editor/editor.main'], function () {
+
+        const uri = monaco.Uri.parse('http://baudu.com/fizz.js')
+        const model = monaco.editor.createModel(oldVersion, '', uri)
+        editor = monaco.editor.create(document.getElementById('container'), { model })
+
+        editor.onDidChangeCursorPosition(e => {
+            const { position: { column, lineNumber } } = e
+            document.querySelector('#position').innerText = `Ln ${lineNumber}, Col ${column}`
+        });
+        setMarker()
+
+    });
+
+    function setMarker() {
+        var currentModel = editor.getModel();
+        const markerArr = []
+        const range = {
+            startLineNumber: 11,
+            startColumn: 12,
+            endLineNumber: 11,
+            endColumn: 18,
+        }
+        const relatedInformation = [
+            {
+                owner: 'Fizz',
+                endColumn: '3',
+                endLineNumber: '4',
+                message: 'This is Realte Info',
+                resource: monaco.Uri.parse('https://fizzz.blog.csdn.net/pmc.js'),
+                startColumn: '1',
+                startLineNumber: '2'
+            }
+        ]
+        const marker = {
+            code: 'code',
+            source: 'source',
+            message: 'It is my define variable',
+            severity: monaco.MarkerSeverity.Error, // Hint,Info,Warning,Error
+            tags: [monaco.MarkerTag.Deprecated], // Unnecessary, Deprecated
+            relatedInformation,
+            ...range
+        }
+        markerArr.push(marker)
+        monaco.editor.setModelMarkers(currentModel, 'owner', markerArr);
+    }
+
+    function getMarker() {
+        const markers = monaco.editor.getModelMarkers()
+        console.log(markers, 'markers')
+    }
+
+</script>
+</body>
+
+</html>

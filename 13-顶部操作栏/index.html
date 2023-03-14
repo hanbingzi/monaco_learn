@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello World Monaco Editor</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+</head>
+
+<body>
+<h2>Hello World CSDN@拿我格子衫来 Monaco Editor</h2>
+<button onclick="trigger('editor.action.showContextMenu')">显示右键</button>
+<button onclick="trigger('actions.find')">查找</button>
+<button onclick="trigger('editor.action.formatDocument')">格式化</button>
+<button onclick="trigger('editor.action.gotoLine')">跳转至N行</button>
+<button onclick="trigger('cursorUndo')">光标后退</button>
+<button onclick="trigger('cursorRedo')">光标前进</button>
+
+<button onclick="injectTriggerAction()">注入action并触发</button>
+<button onclick="trigger('fizz-action')">运行注入的action</button>
+<button onclick="getActionToTrigger('actions.find')">获取id并触发</button>
+
+<div id="container" style="width: 800px; height: 600px; border: 1px solid grey"></div>
+
+<script src="../monaco-editor/package/min/vs/loader.js"></script>
+<script src="../const.js"></script>
+<script>
+    require.config({ paths: { vs: '../monaco-editor/package/min/vs' } });
+    let editor
+
+    require(['vs/editor/editor.main'], function () {
+        editor = monaco.editor.create(document.getElementById('container'), {
+            value: oldVersion,
+            language: 'javascript'
+        });
+    });
+
+
+    function addCommand() {
+        var fizzCommand = editor.createContextKey('fizzCommand', true);
+        editor.addCommand(
+            monaco.KeyMod.chord(
+                monaco.KeyMod.CtrlCmd | monaco.KeyCode.End,
+            )
+            , function () {
+                const currentModel = editor.getModel()
+                console.log(currentModel)
+                const lineCount = currentModel.getLineCount()
+                const valueLength = currentModel.getValueLength()
+                const options = currentModel.getOptions()
+                alert(`Fizz Command:
+              行数: ${lineCount},
+              内容长度: ${valueLength},
+           `);
+            }, 'fizzCommand');
+    }
+
+    function injectTriggerAction() {
+        editor.addAction({
+            // An unique identifier of the contributed action.
+            id: 'fizz-action',
+
+            // A label of the action that will be presented to the user.
+            label: 'Fizz Action',
+
+            // An optional array of keybindings for the action.
+            keybindings: [
+                monaco.KeyMod.CtrlCmd | monaco.KeyCode.F10,
+                // chord
+                monaco.KeyMod.chord(
+                    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK,
+                    monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyM
+                )
+            ],
+
+            // A precondition for this action.
+            precondition: null,
+
+            // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+            keybindingContext: null,
+
+            contextMenuGroupId: 'navigation',
+
+            contextMenuOrder: 1.5,
+
+            run: function (ed) {
+                alert("i'm running => " + ed.getPosition());
+            }
+        });
+
+        editor.trigger('你自定义一个字符串', 'fizz-action')
+    }
+
+    function trigger(commandId) {
+        editor.trigger('你自定义一个字符串', commandId)
+    }
+
+    function getActionToTrigger(id){
+        editor.getAction(id).run().then(() => {
+            console.log('运行成功')
+        })
+    }
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World Monaco Editor</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+</head>
+<body>
+<h2>Hello World Monaco Editor</h2>
+<button onclick="changeShowWay()">切换对比方式</button>
+<div id="container" style="width: 800px;height:600px;border:1px solid gray">
+</div>
+<script src="../monaco-editor/package/min/vs/loader.js"></script>
+<script>
+    require.config({paths: {vs: '../monaco-editor/package/min/vs'}})
+    let diffEditor
+    let renderSideBySide = true;
+    require(['vs/editor/editor.main'], function () {
+        diffEditor = monaco.editor.createDiffEditor(document.getElementById('container'), {
+            enableSplitViewResizing:false
+        })
+        let oldVersionModel = monaco.editor.createModel(oldVersion,'text/javascript');
+        let newVersionModel = monaco.editor.createModel(newVersion,'text/javascript');
+        diffEditor.setModel({original:oldVersionModel,modified:newVersionModel});
+    })
+
+    function changeShowWay(){
+        diffEditor.updateOptions({renderSideBySide:!renderSideBySide})
+        renderSideBySide = !renderSideBySide;
+    }
+    //随着容器的大小，动态修改布局的大小
+    window.onresize = function (){
+        if(diffEditor){
+            diffEditor.layout();
+        }
+    }
+
+</script>
+</body>
+</html>

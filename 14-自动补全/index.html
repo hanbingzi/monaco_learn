@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello World Monaco Editor(CSDN@拿我格子衫来)</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+</head>
+
+<body>
+<h2>Hello World Monaco Editor(CSDN@拿我格子衫来)</h2>
+<button onclick="setValue()">设置值</button>
+
+<div id="container" style="width: 800px; height: 600px; border: 1px solid grey"></div>
+
+<script src="../monaco-editor/package/min/vs/loader.js"></script>
+<script src="../const.js"></script>
+<script>
+    require.config({ paths: { vs: '../monaco-editor/package/min/vs' } });
+    let editor;
+
+    const additionalTextEdits = [
+        {
+            range: {
+                endColumn: '1',
+                endLineNumber: '1',
+                startColumn: '1',
+                startLineNumber: '1',
+            },
+            text: `// 我是备注啊 CSDN@拿我格子衫来`,
+            forceMoveMarkers: true,
+        }
+    ]
+
+    const command = {
+        id: 'editor.action.formatDocument',
+        title: '选中这个建议选项后，触发格式化操作'
+        // id: 'actions.find',
+        // title: '选中这个建议选项后，触发搜索操作'
+    }
+
+    function completionItems(range) {
+        return [
+            {
+                additionalTextEdits: additionalTextEdits,
+                command: command,
+                commitCharacters: ['a', 'b', 'c'],
+                // filterText: '',
+                insertTextRules: '',
+                preselect: true,
+                // sortText: 'f',
+                tags: [monaco.languages.CompletionItemTag.Deprecated],
+                label: 'fizzVar1',
+                kind: monaco.languages.CompletionItemKind.Variable,
+                documentation: 'fizz variable 1',
+                insertText: 'fizzVar1',
+                detail: '拿我格子衫来的第一个预设变量',
+                range: range
+            },
+            {
+                label: 'fizzVar2',
+                kind: monaco.languages.CompletionItemKind.Variable,
+                documentation: 'fizz variable 2',
+                insertText: 'var2',
+                detail: '拿我格子衫来的第二个预设变量',
+                range: range
+            },
+            {
+                label: 'fizzFun1',
+                kind: monaco.languages.CompletionItemKind.Function,
+                documentation: 'fizz funtion 1',
+                insertText: 'fun1()',
+                detail: '拿我格子衫来的第一个预设函数',
+                range: range
+            },
+            {
+                label: 'pangFun2',
+                kind: monaco.languages.CompletionItemKind.Function,
+                documentation: 'pang funtion 1',
+                insertText: 'fun2()',
+                detail: '拿我格子衫来的第二个预设函数',
+                range: range
+            }
+        ]
+
+    }
+
+    function registerCompletionItemProvider() {
+        monaco.languages.registerCompletionItemProvider('javascript', {
+            provideCompletionItems: function (model, position, context, token) {
+                console.log('输出--》',
+                    model,
+                    position,
+                    context,
+                    token)
+                var word = model.getWordUntilPosition(position);
+                var range = {
+                    startLineNumber: position.lineNumber,
+                    endLineNumber: position.lineNumber,
+                    startColumn: word.startColumn,
+                    endColumn: word.endColumn
+                };
+                return {
+                    suggestions: completionItems(range)
+                };
+            }
+        });
+
+    }
+
+    require(['vs/editor/editor.main'], function () {
+        editor = monaco.editor.create(document.getElementById('container'), {
+            value: `
+function mo(){
+  console.log(12)
+}
+  `,
+            language: 'javascript'
+        });
+        registerCompletionItemProvider()
+    });
+
+    function setValue() {
+        editor.trigger('你自定义一个字符串', 'actions.find')
+    }
+
+</script>
+</body>
+
+</html>

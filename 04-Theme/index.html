@@ -7,21 +7,27 @@
 </head>
 <body>
 <h2>Hello World Monaco Editor</h2>
+<button onclick="changeTheme('vs')">默认主题</button>
+<button onclick="changeTheme('vs-dark')">黑色主题</button>
 <div id="container" style="width: 800px;height:600px;border:1px solid gray">
 </div>
 <script src="../monaco-editor/package/min/vs/loader.js"></script>
 <script>
     require.config({paths: {vs: '../monaco-editor/package/min/vs'}})
-    let editor;
+    let editor
     require(['vs/editor/editor.main'], function () {
         editor = monaco.editor.create(document.getElementById('container'), {
             value: ['function x() {', '\tconsole.log("Hello world!");', '}'].join('\n'),
             language: 'javascript'
         })
     })
+    //测试发现无用
+    function changeTheme(theme) {
+        editor.setTheme(theme)
 
-
+    }
 
 </script>
 </body>
 </html>
+=

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello World Monaco Editor</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+</head>
+<body>
+<h2>Hello World Monaco Editor</h2>
+<button onclick="applyInsert()">在3行2列追加一段代码</button>
+<button onclick="applyReplace()">替换1行0列到9行3列</button>
+<div id="container" style="width: 800px; height: 600px; border: 1px solid grey"></div>
+<script src="../monaco-editor/package/min/vs/loader.js"></script>
+<script src="../const.js"></script>
+<script>
+    require.config({ paths: { vs: '../monaco-editor/package/min/vs' } });
+    let editor
+
+    require(['vs/editor/editor.main'], function () {
+        editor = monaco.editor.create(document.getElementById('container'), {
+            value: oldVersion,
+            language: 'javascript'
+        });
+    });
+
+    function applyInsert() {
+        var currentModel = editor.getModel();
+        currentModel.applyEdits([{
+            range: {
+                startColumn: 2, startLineNumber: 3, endColumn: 2, endLineNumber: 3,
+            },
+            text: '// @拿我格子衫来'
+        }], true)
+    }
+
+    function applyReplace() {
+        var currentModel = editor.getModel();
+        currentModel.applyEdits([{
+            range: {
+                startColumn: 0, startLineNumber: 1, endColumn: 3, endLineNumber: 9,
+            },
+            text: '// @拿我格子衫来'
+        }], true)
+    }
+</script>
+</body>
+
+</html>

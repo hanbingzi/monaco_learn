@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World Monaco Editor</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+</head>
+<body>
+<h2>Hello World Monaco Editor</h2>
+<button onclick="showEditLine()">显示编辑的行</button>
+<input type="number" id="input" name="line">
+<button onclick="positionLine()">定位到固定的行</button>
+<div id="container" style="width: 800px;height:600px;border:1px solid gray">
+</div>
+<script src="../monaco-editor/package/min/vs/loader.js"></script>
+<script>
+    require.config({paths: {vs: '../monaco-editor/package/min/vs'}})
+    let editor;
+    require(['vs/editor/editor.main'], function () {
+        editor = monaco.editor.create(document.getElementById('container'), {
+            value: [`function x() {\n\tconsole.log("Hello world!");\n}
+            \nfunction x() {\n\tconsole.log("Hello world!");\n}`].join('\n'),
+            language: 'javascript'
+        })
+    })
+
+    function showEditLine() {
+        const currentModel = editor.getModel();
+        const position = currentModel.getPositionAt();
+        console.log('当前编辑的行：', position);
+    }
+
+    //- editor.revealLine  // 编辑器滚动到lineNumber行,只保证出现改行
+    // - editor.revealLineInCenter // 编辑器滚动到lineNumber行，并将改行滑动到编辑器垂直中心
+    // - editor.revealLineInCenterIfOutsideViewport
+    // - editor.revealLines // 滚动到多行
+    // - editor.revealLinesInCenter // 滚动到多行中心
+    // - editor.revealLinesInCenterIfOutsideViewport // 滚动到多行中心 如果位于视口之外
+    // - editor.revealPosition // 滚动到固定的行，列
+    // - editor.revealPositionInCenter // 滚动到固定的行，列 中心
+    // - editor.revealPositionInCenterIfOutsideViewport // 滚动到固定的行，列 中心 如果位于视口之外
+    // - editor.revealRange // 滚动到一定范围，开始行，列，结束行列
+    // - editor.revealRangeInCenter  // 滚动到一定范围，开始行，列，结束行列 中心点
+    // - editor.revealRangeInCenterIfOutsideViewport // 滚动到一定范围，开始行，列，结束行列 中心点 如果位于视口之外
+    //测试发现方法都无法使用了，可能是升级了
+    function positionLine(){
+        const inputValue = document.getElementById('input').value;
+        console.log('inputValue', inputValue);
+        editor.revealLine(inputValue)
+    }
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello World Monaco Editor</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+</head>
+
+<body>
+<h2>Hello World Monaco Editor</h2>
+<button onclick="setValue()">设置Python内容</button>
+<div id="container" style="width: 800px; height: 600px; border: 1px solid grey"></div>
+
+<script src="../monaco-editor/package/min/vs/loader.js"></script>
+<script src="../const.js"></script>
+<script>
+    require.config({paths: {vs: '../monaco-editor/package/min/vs'}});
+    let editor
+
+    require(['vs/editor/editor.main'], function () {
+        editor = monaco.editor.create(document.getElementById('container'), {
+            value: oldVersion,
+            language: 'javascript'
+        });
+
+
+        let commandId = editor.addCommand(
+            0,
+            function () {
+                alert('It is Fizz Code')
+            },
+            '',
+        )
+
+        monaco.languages.registerCodeLensProvider(['javascript', 'python'], {
+            provideCodeLenses: function (model, token) {
+                return {
+                    lenses: [
+                        {
+                            range: {
+                                startLineNumber: 4,
+                                startColumn: 1,
+                                endLineNumber: 8,
+                                endColumn: 13,
+                            },
+                            id: 'Fizz CodeLens',
+                            command: {
+                                id: commandId,
+                                title: `run sql`,
+                            },
+                        },
+                    ],
+                    dispose: () => {
+                    },
+                }
+            },
+            resolveCodeLens: function (model, codeLens, token) {
+                return codeLens
+            },
+        })
+
+    });
+
+    function setValue() {
+
+        // 第二种重新设置值
+        var currentModel = editor.getModel();
+        const model = monaco.editor.createModel(`
+// 重新设置值
+x = y = z = 1
+print(x) #1
+`, 'python');
+
+        editor.setModel(model);
+
+        model.onDidChangeContent(e => {
+            console.log(e)
+        });
+
+        if (currentModel) {
+            currentModel.dispose();
+        }
+
+    }
+</script>
+</body>
+
+</html>
